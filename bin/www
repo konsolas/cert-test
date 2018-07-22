@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+const fs = require('fs');
+const https = require('https');
+
+const opts = { key: fs.readFileSync('../server_key.pem')
+    , cert: fs.readFileSync('../server_cert.pem')
+// Next, we instruct the HTTPS server to request a client certificate from the user
+    , requestCert: true
+// Then we tell it to accept requests with no valid certificate. We need this to handle invalid connections as well
+// (for example to display an error message), otherwise, they would just get a cryptic HTTPS error message from the
+// browser (`ERR_BAD_SSL_CLIENT_AUTH_CERT` to be precise)
+
+    , rejectUnauthorized: false
+// Finally, we supply a list of CA certificates that we consider valid. For now, we sign client certificates with
+// our own server key, so it will be the same as our server certificate.
+
+    , ca: [ fs.readFileSync('../server_cert.pem') ]
+};
+const port = process.env.PORT || 3000;
+const server = https.createServer(opts, app);
+server.listen(port);
