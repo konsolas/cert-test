@@ -7,7 +7,6 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var authenticateRouter=require('./routes/authenticate');
 var createRouter=require('./routes/create');
-var connect=require('connect');
 
 var app = express();
 
