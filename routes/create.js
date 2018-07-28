@@ -7,16 +7,17 @@ let sleep=function(milliSeconds) {
     var startTime = new Date().getTime();
     while (new Date().getTime() < startTime + milliSeconds);
 };
-router.post('/', (req,res,next)=>{
+router.get('/', (req,res,next)=>{
     //get the name
-    var name=req.body.name;
-    var email=req.body.email;
-    console.log("create user: ",name, email);
+    /*var name=req.body.name;
+    var email=req.body.email;*/
+    var CA_ID=2;
+    console.log("create user: ID: ",CA_ID);
     var isSuccess=true;
-    var callback=function () {};
+   /* var callback=function () {};*/
     //输入进database: Name, Associate 1个CA_ID
     /**/
-    var CA_ID=2;
+
     //创建证书
     /*process.execFile('/client_cert_creation.sh',['-i',CA_ID],null,function (err, stdout, stderr){
         console.log(err, stdout,stderr);
