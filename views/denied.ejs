@@ -3,9 +3,12 @@
 <head>
     <title>Denied</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
-    <%if(id=='no_cert_exception'){ %>
-    <!--Redirect to /create in 10 sec -->
-    <meta http-equiv="refresh" content="5;url=/create">
+    <%if(id=='token_error'){ %>
+    <!--Redirect to /authenticate in 3 sec-->
+        <meta http-equiv="refresh" content="3;url=/authenticate">
+    <%}else if(id=='no_cert_exception'){ %>
+    <!--Redirect to /create in 3 sec -->
+        <meta http-equiv="refresh" content="3;url=/create">
     <%}%>
 </head>
 <body>

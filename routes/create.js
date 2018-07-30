@@ -3,8 +3,9 @@ var router = express.Router();
 var process=require('child_process');
 var fs=require('fs');
 var async=require('async');
-var uuid=require('uuid/v4');
+var uuid=require('uuid/v1');
 var mysql=require('mysql');
+var serverConfig=require('../public/javascripts/serverConfig');
 let sleep=function(milliSeconds) {
     var startTime = new Date().getTime();
     while (new Date().getTime() < startTime + milliSeconds);
@@ -14,39 +15,32 @@ router.get('/', (req,res,next)=>{
     var CN_ID=0;
     var useruuid;
     var username;
-    var certBody;
-    var certKey;
     //创建证书
     /*process.execFile('/client_cert_creation.sh',['-i',CN_ID],null,function (err, stdout, stderr){
         console.log(err, stdout,stderr);
         if(!err&&!stderr)res.status(200).send('Success');
         else res.status(500).send('failed');
     });*/
-    var connection = mysql.createConnection({
-        host: 'localhost',//主机地址
-        user: 'root',//登录名
-        password: '123456',//密码，我这里是空
-        database: 'platformdb'//数据库
-    });
+    var connection = mysql.createConnection(serverConfig);
 
     async.series([
         function(callback){
             //Create user and give him a random uuid, username, date.
             useruuid=uuid();
             useruuid=useruuid.replace(/\-/g,'');
-            console.log(useruuid);
+            console.log("uuid of the new user: "+useruuid);
             connection.connect();
             connection.query(`INSERT INTO users (uuid,creation_date) VALUES ("${useruuid}", now())`, function (err,result){
                 if(err)console.log(err);
-                console.log("query"+`INSERT INTO users (uuid,creation_date) VALUES ("${useruuid}", now())`);
+                console.log("query: "+`INSERT INTO users (uuid,creation_date) VALUES ("${useruuid}", now())`);
             });
             connection.query(`UPDATE users SET username=concat("user",uid) WHERE uuid="${useruuid}"`,function (err,result){
                 if(err) console.log(err);
-                console.log("query"+`UPDATE users SET username=concat("user",uid) WHERE uuid="${useruuid}"`);
-            })
+                console.log("query: "+`UPDATE users SET username=concat("user",uid) WHERE uuid="${useruuid}"`);
+            });
             connection.query(`SELECT * FROM users WHERE uuid="${useruuid}"`,function(err,result){
                 if(err) console.log(err);
-                console.log("query"+`SELECT * FROM users WHERE uuid="${useruuid}"`);
+                console.log("query: "+`SELECT * FROM users WHERE uuid="${useruuid}"`);
                 if(!result||result===""){
                     console.log("not Found");
                 }else{
@@ -59,9 +53,12 @@ router.get('/', (req,res,next)=>{
         },
         function(callback){
             //Create Key and CSR
-            process.exec('openssl req -newkey rsa:4096 -keyout '+CN_ID+'_key.pem -out '+CN_ID+'_csr.pem -nodes -days 365 -subj "/CN='+useruuid+'"',null,function(err,stdout,stderr){
-                console.log(err,stderr);
-            });
+            try {
+                process.execSync('openssl req -newkey rsa:4096 -keyout ' + CN_ID + '_key.pem -out ' + CN_ID + '_csr.pem -nodes -days 365 -subj "/CN=' + useruuid + '"');
+                console.log('Executing: '+'openssl req -newkey rsa:4096 -keyout ' + CN_ID + '_key.pem -out ' + CN_ID + '_csr.pem -nodes -days 365 -subj "/CN=' + useruuid + '"');
+            }catch(err){
+                console.log(err);
+            }
             while(!fs.existsSync('./'+CN_ID+'_key.pem')||!fs.existsSync('./'+CN_ID+'_csr.pem')){
                 sleep(100);
             }
@@ -70,9 +67,12 @@ router.get('/', (req,res,next)=>{
         },
         function(callback){
             //Sign the cert
-            process.exec('openssl x509 -req -in '+CN_ID+'_csr.pem -CA server_cert.pem -CAkey server_key.pem -out '+CN_ID+'_cert.pem -set_serial 01 -days 365', null,function(err,stdout,stderr){
-                console.log(err,stderr);
-            });
+            try{
+                process.execSync('openssl x509 -req -in '+CN_ID+'_csr.pem -CA server_cert.pem -CAkey server_key.pem -out '+CN_ID+'_cert.pem -set_serial 01 -days 365');
+                console.log('Executing: '+'openssl x509 -req -in '+CN_ID+'_csr.pem -CA server_cert.pem -CAkey server_key.pem -out '+CN_ID+'_cert.pem -set_serial 01 -days 365');
+            }catch(err){
+                console.log(err);
+            }
             while(!fs.existsSync('./'+CN_ID+'_cert.pem')){
                 sleep(100);
             }
@@ -81,9 +81,12 @@ router.get('/', (req,res,next)=>{
         },
         function(callback){
             //Package the cert to p12
-            process.exec('openssl pkcs12 -export -clcerts -in '+CN_ID+'_cert.pem -inkey '+CN_ID+'_key.pem -out '+CN_ID+'.p12 -password pass:',null,function(err,stdout,stderr){
-                console.log(err,stderr);
-            });
+            try {
+                process.execSync('openssl pkcs12 -export -clcerts -in ' + CN_ID + '_cert.pem -inkey ' + CN_ID + '_key.pem -out ' + CN_ID + '.p12 -password pass:');
+                console.log('Executing: '+'openssl pkcs12 -export -clcerts -in ' + CN_ID + '_cert.pem -inkey ' + CN_ID + '_key.pem -out ' + CN_ID + '.p12 -password pass:')
+            }catch(err){
+                console.log(err);
+            }
             while(!fs.existsSync('./'+CN_ID+'.p12')){
                 sleep(100);
             }
@@ -131,7 +134,7 @@ router.get('/', (req,res,next)=>{
             var path='./client-ssl/'+CN_ID+'.p12';
             connection.query(`UPDATE users SET cert="${path}" WHERE uid=${CN_ID}`,function(err,result){
                 if(err) console.log(err);
-                console.log(result);
+                console.log("query"+ `UPDATE users SET cert="${path}" WHERE uid=${CN_ID}`);
             });
             callback(null, 'saved the path');
         },
