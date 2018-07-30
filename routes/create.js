@@ -134,7 +134,7 @@ router.get('/', (req,res,next)=>{
             var path='./client-ssl/'+CN_ID+'.p12';
             connection.query(`UPDATE users SET cert="${path}" WHERE uid=${CN_ID}`,function(err,result){
                 if(err) console.log(err);
-                console.log("query"+ `UPDATE users SET cert="${path}" WHERE uid=${CN_ID}`);
+                console.log("query: "+ `UPDATE users SET cert="${path}" WHERE uid=${CN_ID}`);
             });
             callback(null, 'saved the path');
         },
