@@ -3,4 +3,4 @@ module.exports={
     user: 'root',//登录名
     password: '123456',//密码
     database: 'platformdb'//数据库
-}
+};

@@ -1,16 +1,28 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var logger = require('morgan');
-var favicon=require ('serve-favicon');
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var createRouter=require('./routes/create');
-var authRouter=require('./routes/authenticate');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const logger = require('morgan');
+const favicon=require ('serve-favicon');
+const schedule=require('node-schedule');
+
+const certPool=require('./public/javascripts/certPool');
+
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+const createRouter=require('./routes/create');
+const authRouter=require('./routes/authenticate');
+const renewRouter=require('./routes/renew');
 /*
 var store=require('store');
 */
-
+var rule=new schedule.RecurrenceRule();
+rule.hour=0;
+rule.minute=0;
+schedule.scheduleJob(rule,async function(){
+    var updateList=await certPool.updatePool();
+    console.log('Updated the unused users: ');
+    console.log(updateList);
+});
 var app = express();
 
 // view engine setup
@@ -28,6 +40,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/create', createRouter);
 app.use('/authenticate',authRouter);
+app.use('/renew',renewRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

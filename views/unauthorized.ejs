@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Unauthorized</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <%if(id=='token_error'){ %>
+    <!--Redirect to /authenticate in 3 sec-->
+        <meta http-equiv="refresh" content="3;url=/authenticate">
+    <%}%>
+</head>
+<body>
+    <%if (id){ %>
+        <h1>Exception: <%=id%></h1>
+        <p><%=message%></p>
+    <%}%>
+    <%if(id=='no_cert_exception'){ %>
+    <!--Button for /create -->
+        <input type="button" id="create" value="Click to create your certificate" onclick="location.href='/create'"/>
+    <%}else if(id=='cert_expired_exception'||id=='no_such_user_exception'){%>
+        <!-- Button for renewal-->
+        <input type="button" id="renew" value="Click to renew your certificate" onclick="location.href='/renew/:<%=CN%>'"/>
+    <%}%>
+
+</body>
+</html>

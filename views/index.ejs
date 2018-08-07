@@ -5,8 +5,10 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
+      <input type="button" value="Manage your account" onclick="location.href='/users/:<%=subject%>'" />
       <h1>Hello, <%= subject%>. </h1>
       <p>Your token has been issued by <%= issuer%></p>
       <p>Expiration: <%= exp%> </p>
+
   </body>
 </html>

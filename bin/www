@@ -4,13 +4,14 @@
  * Module dependencies.
  */
 
-var app = require('../app');
+const app = require('../app');
+const certPool=require('../public/javascripts/certPool');
 const fs = require('fs');
 const https = require('https');
 
 const opts = { key: fs.readFileSync('server_key.pem')
     , cert: fs.readFileSync('server_cert.pem')
-// Next, we instruct the HTTPS server to request a client certificate from the user
+//We instruct the HTTPS server to request a client certificate from the user
     , requestCert: true
 // Then we tell it to accept requests with no valid certificate. We need this to handle invalid connections as well
 // (for example to display an error message), otherwise, they would just get a cryptic HTTPS error message from the
@@ -23,5 +24,13 @@ const opts = { key: fs.readFileSync('server_key.pem')
     , ca: [ fs.readFileSync('server_cert.pem') ]
 };
 const port = process.env.PORT || 3000;
-const server = https.createServer(opts, app);
-server.listen(port);
+certPool.initPool(10)
+    .then(result=>{
+        console.log(result);
+        const server = https.createServer(opts, app);
+        server.listen(port);
+        console.log('Server listening on port: '+port);
+    })
+    .catch(err=>{
+        console.error(err);
+    });
