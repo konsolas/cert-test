@@ -17,7 +17,7 @@ let createCert=function(uid,useruuid,root){
         //Package the cert to p12
         process.execSync(`openssl pkcs12 -export -clcerts -in ${uid}_cert.pem -inkey ${uid}_key.pem -out ${uid}.p12 -password pass:`);
         console.log(`Executing: openssl pkcs12 -export -clcerts -in ${uid}_cert.pem -inkey ${uid}_key.pem -out ${uid}.p12 -password pass:`);
-        //Move the files (you can change the code to delete the .pem files that are actually useless hehehe
+        //Move the files (you can change the code to delete the .pem files that are actually useless
         console.log('moving the files');
         fs.renameSync('./'+uid+'_csr.pem', root+uid+'_csr.pem');
         fs.renameSync('./'+uid+'_key.pem', root+uid+'_key.pem');
