@@ -5,7 +5,7 @@ const logger = require('morgan');
 const favicon=require ('serve-favicon');
 const schedule=require('node-schedule');
 
-const certPool=require('./public/javascripts/certPool');
+const certPool=require('./utils/certPool');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');

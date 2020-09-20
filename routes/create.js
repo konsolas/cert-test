@@ -4,9 +4,9 @@ const process=require('child_process');
 const fs=require('fs');
 const async=require('async');
 const uuid=require('uuid/v1');
-const query=require('../public/javascripts/sql');
-const certUtils=require('../public/javascripts/certUtils');
-const certPool=require('../public/javascripts/certPool');
+const query=require('../utils/sql');
+const certUtils=require('../utils/certUtils');
+const certPool=require('../utils/certPool');
 
 async function send(req,res,uid){
     if(uid!==0) {

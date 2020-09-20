@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var checkAuth=require('../public/javascripts/checkAuth');
+var checkAuth=require('../utils/checkAuth');
 
 /* GET users listing. */
 router.get(`/:username`, checkAuth, function(req, res, next) {

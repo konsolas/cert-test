@@ -1,11 +1,11 @@
 var express = require('express');
 var router = express.Router();
 var mysql= require('mysql');
-var serverConfig=require('../public/javascripts/serverConfig');
+var serverConfig=require('../utils/serverConfig');
 /*
 var store=require('store');
 */
-var checkAuth=require('../public/javascripts/checkAuth');
+var checkAuth=require('../utils/checkAuth');
 /* GET home page. */
 router.get('/',checkAuth, function(req, res, next) {
     var user=req.user;/*store.get('user');*/ //get the user from local storage;

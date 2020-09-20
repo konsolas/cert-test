@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const secret = require('../public/javascripts/secret');
-const query = require('../public/javascripts/sql');
+const secret = require('../utils/secret');
+const query = require('../utils/sql');
 const jwt = require('jsonwebtoken');
 /* GET home page. */
 

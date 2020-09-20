@@ -1,7 +1,7 @@
 const express=require('express');
 const router=express.Router();
 const fs=require('fs');
-const certUtils=require('../public/javascripts/certUtils');
+const certUtils=require('../utils/certUtils');
 router.get(`/:uuid`,(req,res,next)=>{
     //renew the cert for a user.
     var useruuid=req.params.uuid.replace(':','');
